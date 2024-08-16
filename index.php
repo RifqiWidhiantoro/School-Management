@@ -125,35 +125,47 @@ if (!isset($_SESSION['form_data']) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
     </div>
 
     <script>
-        // Validasi saat submit form
-        function validateForm() {
-            // Cek apakah minimal satu hobi dipilih
-            const hobi = document.querySelectorAll('input[name="hobi[]"]:checked');
-            if (hobi.length === 0) {
-                alert('Anda wajib memilih minimal satu hobi.');
-                return false;
-            }
-
-            // Cek apakah gambar diupload
-            const gambar = document.getElementById('gambar').value;
-            if (!gambar) {
-                alert('Anda wajib mengupload gambar.');
-                return false;
-            }
-
-            return true; // Lanjutkan submit jika semua validasi lolos
+    // Validasi saat submit form
+    function validateForm() {
+        // Cek apakah nama lengkap diisi dan mengandung minimal 3 karakter
+        const fullName = document.getElementById('full_name').value.trim();
+        if (fullName === '') {
+            alert('Nama lengkap wajib diisi.');
+            return false;
+        }
+        if (fullName.length < 3) {
+            alert('Nama lengkap harus terdiri dari minimal 3 karakter.');
+            return false;
         }
 
-        // Fungsi untuk menangani tombol OK di alert box
-        function handleOk() {
-            document.getElementById('alert-box').style.display = 'none';
-            window.location.href = 'index.php';
+        // Cek apakah minimal satu hobi dipilih
+        const hobi = document.querySelectorAll('input[name="hobi[]"]:checked');
+        if (hobi.length === 0) {
+            alert('Anda wajib memilih minimal satu hobi.');
+            return false;
         }
 
-        // Fungsi untuk menangani tombol Cancel di alert box
-        function handleCancel() {
-            document.getElementById('alert-box').style.display = 'none';
+        // Cek apakah gambar diupload
+        const gambar = document.getElementById('gambar').value;
+        if (!gambar) {
+            alert('Anda wajib mengupload gambar.');
+            return false;
         }
-    </script>
+
+        return true; // Lanjutkan submit jika semua validasi lolos
+    }
+
+    // Fungsi untuk menangani tombol OK di alert box
+    function handleOk() {
+        document.getElementById('alert-box').style.display = 'none';
+        window.location.href = 'index.php';
+    }
+
+    // Fungsi untuk menangani tombol Cancel di alert box
+    function handleCancel() {
+        document.getElementById('alert-box').style.display = 'none';
+    }
+</script>
+
 </body>
 </html>

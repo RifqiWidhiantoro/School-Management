@@ -43,7 +43,7 @@ if (isset($_SESSION['error'])) {
 
     <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg mt-12">
         <h2 class="text-2xl font-bold mb-6 text-center text-gray-800 pt-6">Edit Profil Siswa</h2>
-        <form id="editForm" action="update.php" method="post" enctype="multipart/form-data" class="space-y-4">
+        <form id="editForm" action="update.php" method="post" enctype="multipart/form-data" class="space-y-4" onsubmit="return validateForm()">
             <input type="hidden" name="id" value="<?= $data->id ?>">
 
             <div>
@@ -128,6 +128,15 @@ if (isset($_SESSION['error'])) {
     </div>
 
     <script>
+        function validateForm() {
+            const fullName = document.getElementById('full_name').value.trim();
+            if (fullName.length < 3) {
+                alert('Nama lengkap harus terdiri dari minimal 3 karakter.');
+                return false;
+            }
+            return true;
+        }
+
         function handleOk() {
             document.getElementById('alert-box').style.display = 'none';
             window.location.href = 'edit.php?id=<?= $data->id ?>';
@@ -136,6 +145,9 @@ if (isset($_SESSION['error'])) {
         function handleCancel() {
             document.getElementById('alert-box').style.display = 'none';
         }
+
+        // Menambahkan event listener untuk submit form
+        document.getElementById('editForm').onsubmit = validateForm;
     </script>
 </body>
 </html>
