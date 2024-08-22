@@ -94,10 +94,18 @@ if (!$deleted) {
         }
         .modal-content {
             background-color: #fefefe;
-            margin: 15% auto;
+            margin: auto;
             padding: 20px;
             border: 1px solid #888;
-            width: 80%;
+            max-width: 90%;
+            max-height: 90%;
+        }
+        .modal-content img {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            border-radius: 0;
         }
         .close {
             color: white;
@@ -154,7 +162,7 @@ if (!$deleted) {
         }
         ?>
         <?php if (isset($row) && $row): ?>
-            <img src='asset/thumbnail_image/<?= $row['image'] ?>' width='150' height='150' onclick="document.getElementById('myModal').style.display='block'">
+            <img src='asset/thumbnail_image/<?= $row['image'] ?>' width='160' height='160' onclick="document.getElementById('myModal').style.display='block'">
             <div class="profile-details">
                 <table border="1">
                     <tr>
@@ -202,10 +210,13 @@ if (!$deleted) {
         <span class="close" onclick="document.getElementById('myModal').style.display='none'">&times;</span>
         <div class="modal-content">
             <?php if (isset($row) && $row): ?>
-                <img src='asset/original_image/<?= $row['image'] ?>' width='600'>
+                <img src='asset/original_image/<?= $row['image'] ?>'>
             <?php endif; ?>
         </div>
     </div>
+
+</body>
+</html>
 
     <!-- Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
