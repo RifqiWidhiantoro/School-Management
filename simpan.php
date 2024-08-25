@@ -27,8 +27,8 @@ if ($file['error'] === UPLOAD_ERR_OK) {
         $error_message = "Pilih File Gambar yang ingin diupload.";
     } elseif (!in_array($file_extension, $allowed_image_extension)) {
         $error_message = "Upload gambar yang valid. Hanya JPG, JPEG, dan PNG yang diperbolehkan.";
-    } elseif ($file["size"] > 1048576) { // 1MB
-        $error_message = "Ukuran gambar melebihi 1MB.";
+    } elseif ($file["size"] > 1048576) { // 10MB
+        $error_message = "Ukuran gambar melebihi 10MB.";
     }
 
     if (isset($error_message)) {
