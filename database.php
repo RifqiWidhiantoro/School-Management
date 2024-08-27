@@ -3,22 +3,28 @@ $server = 'localhost';
 $username = 'root';
 $password = '';
 
+// Membuat koneksi ke MySQL tanpa memilih database
 $conn = new mysqli($server, $username, $password);
 
+// Cek koneksi
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Hapus database jika sudah ada, lalu buat ulang database 'pelajar'
 $drop = "DROP DATABASE IF EXISTS pelajar";
 $conn->query($drop);
 
 $sql = "CREATE DATABASE pelajar";
-if ($conn->query($sql) === TRUE) {
-    echo "Database created successfully";
-} else {
-    echo "Error creating database: " . $conn->error;
+if ($conn->query($sql) !== TRUE) {
+    die("Error creating database: " . $conn->error);
 }
 
+// Pilih database 'pelajar'
 $database = "pelajar";
 mysqli_select_db($conn, $database);
 
-// Create the 'users' table first
+// Buat tabel 'users'
 $createTableUsers = "CREATE TABLE IF NOT EXISTS users (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(100) NOT NULL UNIQUE,
@@ -27,38 +33,42 @@ $createTableUsers = "CREATE TABLE IF NOT EXISTS users (
 )";
 $conn->query($createTableUsers);
 
+// Buat tabel 'jenis_kelamin'
 $createTableJenisKelamin = "CREATE TABLE IF NOT EXISTS jenis_kelamin (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     gender VARCHAR(20)
 )";
 $conn->query($createTableJenisKelamin);
 
+// Buat tabel 'agama'
 $createTableAgama = "CREATE TABLE IF NOT EXISTS agama (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     agama VARCHAR(20)
 )";
 $conn->query($createTableAgama);
 
+// Buat tabel 'hobi'
 $createTableHobi = "CREATE TABLE IF NOT EXISTS hobi (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     hobi VARCHAR(50)
 )";
 $conn->query($createTableHobi);
 
+// Buat tabel 'kelas'
 $createTableKelas = "CREATE TABLE IF NOT EXISTS kelas (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    class VARCHAR(10),
-    user_id INT,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    class VARCHAR(10)
 )";
 $conn->query($createTableKelas);
 
+// Buat tabel 'jurusan'
 $createTableJurusan = "CREATE TABLE IF NOT EXISTS jurusan (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     jurusan VARCHAR(50)
 )";
 $conn->query($createTableJurusan);
 
+// Buat tabel 'data_siswa'
 $createTableDataSiswa = "CREATE TABLE IF NOT EXISTS data_siswa (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(35),
@@ -76,6 +86,7 @@ $createTableDataSiswa = "CREATE TABLE IF NOT EXISTS data_siswa (
 )";
 $conn->query($createTableDataSiswa);
 
+// Buat tabel 'siswa_hobi'
 $createTableSiswaHobi = "CREATE TABLE IF NOT EXISTS siswa_hobi (
     siswa_id INT,
     hobi_id INT,
@@ -85,26 +96,30 @@ $createTableSiswaHobi = "CREATE TABLE IF NOT EXISTS siswa_hobi (
 )";
 $conn->query($createTableSiswaHobi);
 
-// Create table for 'guru'
-$createTableGuru = "CREATE TABLE IF NOT EXISTS guru (
+// Buat tabel 'data_guru'
+$createTableDataGuru = "CREATE TABLE IF NOT EXISTS data_guru (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
-    name VARCHAR(35),
-    gender_id INT,
-    agama_id INT,
+    user_id INT NOT NULL,
+    name VARCHAR(35) NOT NULL,
+    gender_id INT NOT NULL,
+    agama_id INT NOT NULL,
+    alamat VARCHAR(255),
+    nomor_telepon VARCHAR(15),
+    jurusan VARCHAR(255),
+    image VARCHAR(255),
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (gender_id) REFERENCES jenis_kelamin(id),
     FOREIGN KEY (agama_id) REFERENCES agama(id)
 )";
-$conn->query($createTableGuru);
+$conn->query($createTableDataGuru);
 
-// Insert data into 'jenis_kelamin' before inserting into 'guru'
+// Masukkan data ke dalam tabel 'jenis_kelamin'
 $insertJenisKelamin = "INSERT INTO jenis_kelamin (gender) VALUES 
     ('Laki-laki'), 
     ('Perempuan')";
 $conn->query($insertJenisKelamin);
 
-// Insert data into 'agama' before inserting into 'guru'
+// Masukkan data ke dalam tabel 'agama'
 $insertAgama = "INSERT INTO agama (agama) VALUES 
     ('Islam'), 
     ('Kristen'), 
@@ -113,7 +128,7 @@ $insertAgama = "INSERT INTO agama (agama) VALUES
     ('Kong Ho Cu')";
 $conn->query($insertAgama);
 
-// Insert default users (Admin1 - Admin5)
+// Masukkan data default pengguna admin ke dalam tabel 'users'
 $hashedPasswordAdmin1 = password_hash('AdminPass1!', PASSWORD_DEFAULT);
 $hashedPasswordAdmin2 = password_hash('AdminPass2!', PASSWORD_DEFAULT);
 $hashedPasswordAdmin3 = password_hash('AdminPass3!', PASSWORD_DEFAULT);
@@ -128,12 +143,12 @@ $insertAdmins = "INSERT INTO users (username, password, role) VALUES
     ('admin5', '$hashedPasswordAdmin5', 'admin')";
 $conn->query($insertAdmins);
 
-// Insert data for 'guru'
-$insertGuru = "INSERT INTO guru (user_id, name, gender_id, agama_id) VALUES 
-    ((SELECT id FROM users WHERE username = 'guru1'), 'Guru 1', 1, 1)";
+// Masukkan data default guru ke dalam tabel 'data_guru'
+$insertGuru = "INSERT INTO data_guru (user_id, name, gender_id, agama_id) VALUES 
+    ((SELECT id FROM users WHERE username = 'admin1'), 'Guru 1', 1, 1)";
 $conn->query($insertGuru);
 
-// Insert data into 'hobi', 'kelas', and 'jurusan'
+// Masukkan data ke dalam tabel 'hobi'
 $insertHobi = "INSERT INTO hobi (hobi) VALUES 
     ('Membaca'), 
     ('Menulis'), 
@@ -142,12 +157,14 @@ $insertHobi = "INSERT INTO hobi (hobi) VALUES
     ('Melukis')";
 $conn->query($insertHobi);
 
-$insertKelas = "INSERT INTO kelas (class, user_id) VALUES 
-    ('X', NULL), 
-    ('XI', NULL), 
-    ('XII', NULL)";
+// Masukkan data ke dalam tabel 'kelas'
+$insertKelas = "INSERT INTO kelas (class) VALUES 
+    ('X'), 
+    ('XI'), 
+    ('XII')";
 $conn->query($insertKelas);
 
+// Masukkan data ke dalam tabel 'jurusan'
 $insertJurusan = "INSERT INTO jurusan (jurusan) VALUES 
     ('Akuntansi'), 
     ('Busana'), 
@@ -159,4 +176,6 @@ $insertJurusan = "INSERT INTO jurusan (jurusan) VALUES
     ('Teknik Komputer')";
 $conn->query($insertJurusan);
 
+echo "Database berhasil dibuat beserta tabel-tabelnya.";
+$conn->close();
 ?>

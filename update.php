@@ -1,8 +1,26 @@
 <?php
-include_once "connection.php";
 session_start();
+include_once "connection.php";
 
-$id = $_POST['id'];
+// Cek apakah user sudah login
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['role'])) {
+    header("Location: login.php");
+    exit();
+}
+
+$user_id = $_SESSION['user_id'];
+$role = $_SESSION['role'];
+
+// Cek apakah ID data_siswa ada dan milik user ini
+$query = mysqli_query($conn, "SELECT * FROM data_siswa WHERE user_id = $user_id");
+if (mysqli_num_rows($query) == 0) {
+    header("location: profil.php?message=data_user_tidak_ditemukan");
+    exit();
+}
+
+$result = mysqli_fetch_assoc($query);
+$id = $result['id'];  // Ambil id dari tabel data_siswa
+
 $full_name   = $_POST['full_name'];
 $gender_id   = $_POST['gender_id'];
 $agama_id    = $_POST['agama_id'];
@@ -18,11 +36,16 @@ if (count($hobi) < 1) {
     exit();
 }
 
-// Cek apakah ID ada di database
+// Cek apakah ID ada di database dan ambil data siswa
 $query = mysqli_query($conn, "SELECT * FROM data_siswa WHERE id = $id");
 if (mysqli_num_rows($query) == 0) {
-    // Jika ID tidak ditemukan, redirect ke profil.php dengan pesan error
     header("location: profil.php?message=data_user_tidak_ditemukan");
+    exit();
+}
+
+// Validasi akses: Hanya admin atau user yang bersangkutan yang dapat mengupdate data ini
+if ($role !== 'admin' && $user_id !== $id) {
+    header("Location: profil.php?id=$user_id&message=tidak_berhak_mengedit");
     exit();
 }
 
@@ -46,7 +69,6 @@ if ($file['error'] === UPLOAD_ERR_OK) {
     }
 
     // Hapus gambar lama dari folder jika ada gambar baru yang diunggah
-    $result = mysqli_fetch_assoc($query);
     $old_image = $result['image'];
 
     if ($old_image) {
@@ -116,3 +138,4 @@ foreach ($hobi as $h) {
 // Redirect ke halaman profil dengan ID yang benar
 header("location: profil.php?id=$id&message=data_berhasil_diperbarui");
 exit();
+?>

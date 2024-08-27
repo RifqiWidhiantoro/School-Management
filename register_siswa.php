@@ -19,7 +19,7 @@ if (!isset($_SESSION['form_data']) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form Data</title>
+    <title>Registrasi Siswa</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 flex justify-center items-center h-screen">
@@ -36,7 +36,7 @@ if (!isset($_SESSION['form_data']) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
     <?php endif; ?>
 
     <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg mt-10">
-        <h2 class="text-2xl font-bold mb-6 text-center text-gray-800 pt-6">Form Data Siswa</h2>
+        <h2 class="text-2xl font-bold mb-6 text-center text-gray-800 pt-6">Registrasi Data Siswa</h2>
 
         <form action="simpan.php" method="post" enctype="multipart/form-data" class="space-y-4" onsubmit="return validateForm()">
             <input type="hidden" name="from" value="index">
@@ -44,6 +44,11 @@ if (!isset($_SESSION['form_data']) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
             <div>
                 <label for="full_name" class="block text-gray-700 font-semibold">Nama Lengkap:</label>
                 <input type="text" id="full_name" name="full_name" value="<?= isset($form_data['full_name']) ? $form_data['full_name'] : '' ?>" class="mt-1 p-2 block w-full border border-gray-300 rounded-lg focus:border-blue-500">
+            </div>
+
+            <div>
+                <label for="password" class="block text-gray-700 font-semibold">Password:</label>
+                <input type="password" id="password" name="password" value="<?= isset($form_data['password']) ? $form_data['password'] : '' ?>" class="mt-1 p-2 block w-full border border-gray-300 rounded-lg focus:border-blue-500">
             </div>
 
             <div>
@@ -126,34 +131,42 @@ if (!isset($_SESSION['form_data']) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
 
     <script>
     // Validasi saat submit form
-    function validateForm() {
-        // Cek apakah nama lengkap diisi dan mengandung minimal 3 karakter
-        const fullName = document.getElementById('full_name').value.trim();
-        if (fullName === '') {
-            alert('Nama lengkap wajib diisi.');
-            return false;
-        }
-        if (fullName.length < 3) {
-            alert('Nama lengkap harus terdiri dari minimal 3 karakter.');
-            return false;
-        }
+function validateForm() {
+    const fullName = document.getElementById('full_name').value.trim();
+    const password = document.getElementById('password').value.trim();
 
-        // Cek apakah minimal satu hobi dipilih
-        const hobi = document.querySelectorAll('input[name="hobi[]"]:checked');
-        if (hobi.length === 0) {
-            alert('Anda wajib memilih minimal satu hobi.');
-            return false;
-        }
-
-        // Cek apakah gambar diupload
-        const gambar = document.getElementById('gambar').value;
-        if (!gambar) {
-            alert('Anda wajib mengupload gambar.');
-            return false;
-        }
-
-        return true; // Lanjutkan submit jika semua validasi lolos
+    if (fullName === '') {
+        alert('Nama lengkap wajib diisi.');
+        return false;
     }
+    if (fullName.length < 3) {
+        alert('Nama lengkap harus terdiri dari minimal 3 karakter.');
+        return false;
+    }
+
+    if (password === '') {
+        alert('Password wajib diisi.');
+        return false;
+    }
+    if (password.length < 6) {
+        alert('Password harus terdiri dari minimal 6 karakter.');
+        return false;
+    }
+
+    const hobi = document.querySelectorAll('input[name="hobi[]"]:checked');
+    if (hobi.length === 0) {
+        alert('Anda wajib memilih minimal satu hobi.');
+        return false;
+    }
+
+    const gambar = document.getElementById('gambar').value;
+    if (!gambar) {
+        alert('Anda wajib mengupload gambar.');
+        return false;
+    }
+
+    return true; // Lanjutkan submit jika semua validasi lolos
+}
 
     // Fungsi untuk menangani tombol OK di alert box
     function handleOk() {

@@ -1,46 +1,55 @@
 <?php
+// login.php
 session_start();
-require 'database.php';
+require 'login_connection.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = $_POST['email'];
+    $username = $_POST['username'];
     $password = $_POST['password'];
-    
-    // Query untuk mendapatkan user berdasarkan email
-    $query = "SELECT * FROM users WHERE email = ?";
+
+    // Query untuk mendapatkan user berdasarkan username
+    $query = "SELECT * FROM users WHERE username = ?";
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("s", $email);
+    $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
     $user = $result->fetch_assoc();
-    
-    if ($user && password_verify($password, $user['password'])) {
+
+    // Validasi username dan password
+    if (!$user) {
+        $error = "Username tidak ditemukan!";
+    } elseif (password_verify($password, $user['password'])) {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['role'] = $user['role'];
-        
-        // Redirect sesuai role
-        switch($user['role']) {
-            case 'admin':
-                header("Location: admin.php");
-                exit();
-            case 'guru':
-                header("Location: guru.php");
-                exit();
-            case 'siswa':
-                header("Location: siswa.php");
-                exit();
+
+        // Ambil id dari data_siswa berdasarkan user_id
+        $querySiswa = "SELECT id FROM data_siswa WHERE user_id = ?";
+        $stmtSiswa = $conn->prepare($querySiswa);
+        $stmtSiswa->bind_param("i", $user['id']);
+        $stmtSiswa->execute();
+        $resultSiswa = $stmtSiswa->get_result();
+        $siswa = $resultSiswa->fetch_assoc();
+
+        if ($siswa) {
+            $_SESSION['siswa_id'] = $siswa['id'];
+            header("Location: profil_siswa.php"); // Arahkan ke halaman profil siswa
+        } else {
+            // Jika data_siswa tidak ditemukan, arahkan ke halaman edit untuk melengkapi profil
+            header("Location: edit.php");
         }
+        exit();
     } else {
-        $error = "Email atau password salah!";
+        $error = "Password salah!";
     }
 }
 ?>
+
 <!-- HTML Form untuk login -->
 <form method="POST" action="">
-    <input type="email" name="email" required>
-    <input type="password" name="password" required>
+    <input type="text" name="username" placeholder="Username" required>
+    <input type="password" name="password" placeholder="Password" required>
     <button type="submit">Login</button>
 </form>
-<?php if(isset($error)): ?>
+<?php if (isset($error)): ?>
 <p><?= $error ?></p>
 <?php endif; ?>

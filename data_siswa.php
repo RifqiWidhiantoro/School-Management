@@ -39,13 +39,13 @@ $result = mysqli_query($conn, $query);
                 $backgroundColor = $jurusan_colors[$row['jurusan']] ?? '#f4f4f4'; // Default color if jurusan not in array
                 echo "<div class='w-64 p-6 text-center rounded-lg shadow-lg transform transition duration-500 hover:scale-105' style='background-color: $backgroundColor; color: white;'>
                         <h3 class='text-2xl font-semibold mb-4'>{$row['name']}</h3>
-                        <button onclick=\"window.location.href='profil.php?id={$row['id']}'\" class='px-5 py-3 mt-6 bg-white text-gray-800 font-semibold rounded-full hover:bg-gray-200 transition duration-300 shadow-md'>Lihat Profil</button>
+                        <button onclick=\"window.location.href='profil_siswa.php?id={$row['id']}'\" class='px-5 py-3 mt-6 bg-white text-gray-800 font-semibold rounded-full hover:bg-gray-200 transition duration-300 shadow-md'>Lihat Profil</button>
                       </div>";
             }
             ?>
         </div>
         <div class="text-center mt-12">
-            <a href="data.php" class="inline-block px-8 py-4 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 transition duration-300 shadow-lg transform hover:scale-105">Lihat Statistik Data Siswa</a>
+            <a href="chart.php" class="inline-block px-8 py-4 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 transition duration-300 shadow-lg transform hover:scale-105">Lihat Statistik Data Siswa</a>
         </div>
     </div>
 </body>

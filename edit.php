@@ -1,7 +1,22 @@
 <?php
 session_start();
 include_once "connection.php";
+
+// Cek apakah user sudah login
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['role'])) {
+    header("Location: login.php");
+    exit();
+}
+
 $id = $_GET['id'];
+$user_id = $_SESSION['user_id'];
+$role = $_SESSION['role'];
+
+// Hanya admin atau siswa yang bersangkutan yang dapat mengakses halaman ini
+if ($role != 'admin' && $role != 'guru' && $user_id != $id) {
+    header("Location: profil.php?id=$user_id&message=tidak_berhak_mengedit");
+    exit();
+}
 
 // Mengambil data siswa berdasarkan id
 $query = mysqli_query($conn, "SELECT * FROM data_siswa WHERE id = $id");
